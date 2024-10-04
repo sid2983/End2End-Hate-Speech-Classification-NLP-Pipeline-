@@ -1,0 +1,26 @@
+
+apache-airflow
+numpy
+pandas
+scikit-learn
+seaborn
+matplotlib
+tensorflow
+tf-keras
+transformers
+datasets
+emoji
+mlflow
+dvc
+dvc-s3
+
+
+# dev requirements
+
+pytest
+tox
+black
+flake8
+mypy
+
+-e .

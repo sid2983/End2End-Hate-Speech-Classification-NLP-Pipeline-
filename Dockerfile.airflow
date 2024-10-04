@@ -1,0 +1,48 @@
+FROM python:3.12.5-slim-bullseye
+
+USER root
+RUN mkdir /app
+COPY . /app
+WORKDIR /app/
+
+# Install dependencies
+RUN pip install -r requirements.txt
+
+# Airflow environment variables
+ENV AIRFLOW_HOME="/app/airflow"
+ENV AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=1000
+ENV AIRFLOW__CORE__ENABLE_XCOM_PICKLING=True
+
+# Initialize Airflow and create an admin user
+RUN airflow db init
+RUN airflow users create --username admin --password admin --firstname admin --lastname admin --role Admin --email sid24000576@gmail
+
+# Set permission for start.sh
+RUN chmod 777 start.sh
+
+# Ensure Python alias
+RUN apt update -y 
+RUN if [ ! -e /usr/local/bin/python ]; then ln -s /usr/local/bin/python3 /usr/local/bin/python; fi
+
+# Create logs directory
+RUN mkdir -p /app/logs && chmod -R 777 /app/logs
+
+# Install AWS CLI for DVC interaction with S3
+RUN apt-get update && apt-get install -y curl unzip && \
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm awscliv2.zip
+
+# Set up DVC remote without storing credentials
+RUN if ! dvc remote list | grep -q 'datastore'; then \
+    dvc remote add -d datastore s3://ksp-dvc2; \
+    fi
+
+
+EXPOSE 8080
+EXPOSE 5050
+
+# ENTRYPOINT and CMD for the container
+ENTRYPOINT [ "/bin/sh" ]
+CMD [ "start.sh" ]

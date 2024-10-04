@@ -1,0 +1,18 @@
+
+apache-airflow
+numpy
+pandas
+scikit-learn
+seaborn
+matplotlib
+tensorflow[and-cuda]
+tf-keras
+transformers
+datasets
+emoji
+mlflow
+dvc
+dvc-s3
+
+
+-e .

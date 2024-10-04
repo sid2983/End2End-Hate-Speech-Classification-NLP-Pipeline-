@@ -160,3 +160,20 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+/artifact.txt
+
+
+
+artifacts/raw.csv
+artifacts/train.csv
+artifacts/test.csv
+artifacts/preprocessor.pkl 
+artifacts/model.pkl
+artifacts/train_array.npy
+artifacts/test_array.npy
+artifacts/train_data.tfrecord
+artifacts/test_data.tfrecord
+logs/
+logs/train/
+
+End2End-Hate-Speech-Classification-NLP-Pipeline-.code-workspace
