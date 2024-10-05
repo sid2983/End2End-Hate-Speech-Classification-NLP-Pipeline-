@@ -1,0 +1,15 @@
+artifact_uri: file:///home/ubuntu/End2End-Hate-Speech-Classification-NLP-Pipeline-/mlruns/331106352593106476/8e7222cba7c549c38bcc4ccfa94643c3/artifacts
+end_time: 1728126706500
+entry_point_name: ''
+experiment_id: '331106352593106476'
+lifecycle_stage: active
+run_id: 8e7222cba7c549c38bcc4ccfa94643c3
+run_name: youthful-mole-20
+run_uuid: 8e7222cba7c549c38bcc4ccfa94643c3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1728126704192
+status: 3
+tags: []
+user_id: ubuntu
