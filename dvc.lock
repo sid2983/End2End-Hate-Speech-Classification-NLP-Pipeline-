@@ -1,0 +1,91 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/pipeline/training_pipeline.py data_ingestion
+    deps:
+    - path: src/components/data_ingestion.py
+      hash: md5
+      md5: 24129410665e9a7b8ac468819b4f0745
+      size: 2978
+    - path: src/pipeline/training_pipeline.py
+      hash: md5
+      md5: 7ec5723679c0d8f6f53c13bd75334114
+      size: 2852
+    outs:
+    - path: artifacts/raw.csv
+      hash: md5
+      md5: 28abed2f2db876e784bfeaa1ea036993
+      size: 4190378
+    - path: artifacts/test.csv
+      hash: md5
+      md5: 3e267feb1a8c4ccff09f51657eacdf4e
+      size: 1054810
+    - path: artifacts/train.csv
+      hash: md5
+      md5: 9ddab7df507e71df181f26b00736b285
+      size: 3135580
+  data_transformation:
+    cmd: python src/pipeline/training_pipeline.py data_transformation
+    deps:
+    - path: artifacts/test.csv
+      hash: md5
+      md5: 3e267feb1a8c4ccff09f51657eacdf4e
+      size: 1054810
+    - path: artifacts/train.csv
+      hash: md5
+      md5: 9ddab7df507e71df181f26b00736b285
+      size: 3135580
+    - path: src/components/data_transformation.py
+      hash: md5
+      md5: 4a3628f583cae93b70691214f6071ee0
+      size: 6316
+    - path: src/pipeline/training_pipeline.py
+      hash: md5
+      md5: 7ec5723679c0d8f6f53c13bd75334114
+      size: 2852
+    outs:
+    - path: artifacts/preprocessor.pkl
+      hash: md5
+      md5: a5895b64ca6f50c3dfe0c428cb22ffe2
+      size: 3584698
+    - path: artifacts/test_data.tfrecord
+      hash: md5
+      md5: 4d719d6ee03203a584604a643a642a13.dir
+      size: 14650763
+      nfiles: 3
+    - path: artifacts/train_data.tfrecord
+      hash: md5
+      md5: fed798bfcea4a8b0b00fd057ae006fcb.dir
+      size: 44042671
+      nfiles: 3
+  model_training:
+    cmd: python src/pipeline/training_pipeline.py model_training
+    deps:
+    - path: artifacts/preprocessor.pkl
+      hash: md5
+      md5: a5895b64ca6f50c3dfe0c428cb22ffe2
+      size: 3584698
+    - path: artifacts/test_data.tfrecord
+      hash: md5
+      md5: 4d719d6ee03203a584604a643a642a13.dir
+      size: 14650763
+      nfiles: 3
+    - path: artifacts/train_data.tfrecord
+      hash: md5
+      md5: fed798bfcea4a8b0b00fd057ae006fcb.dir
+      size: 44042671
+      nfiles: 3
+    - path: src/components/model_trainer.py
+      hash: md5
+      md5: ce48c60bfdda752e66921c1ffbdd761e
+      size: 3553
+    - path: src/pipeline/training_pipeline.py
+      hash: md5
+      md5: 7ec5723679c0d8f6f53c13bd75334114
+      size: 2852
+    outs:
+    - path: artifacts/final_model
+      hash: md5
+      md5: 4bff14988734e785db7a5a220233685f.dir
+      size: 498878930
+      nfiles: 2
