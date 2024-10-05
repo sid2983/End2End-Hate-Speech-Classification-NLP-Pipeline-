@@ -117,7 +117,7 @@ class DataTransformation:
             AUTOTUNE = tf.data.experimental.AUTOTUNE
             train_data = (train_dataset
                         .shuffle(buffer_size=1000)  # Shuffle the dataset
-                        .batch(64)  # Batch size for training
+                        .batch(32)  # Batch size for training
                         .prefetch(buffer_size=AUTOTUNE))  # Prefetch for efficient training
 
             test_data = (test_dataset
