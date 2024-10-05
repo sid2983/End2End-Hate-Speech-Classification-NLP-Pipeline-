@@ -1,0 +1,15 @@
+artifact_uri: file:///home/ubuntu/End2End-Hate-Speech-Classification-NLP-Pipeline-/mlruns/331106352593106476/b10fbc4844814969b33a66d9e03c1178/artifacts
+end_time: 1728126075585
+entry_point_name: ''
+experiment_id: '331106352593106476'
+lifecycle_stage: active
+run_id: b10fbc4844814969b33a66d9e03c1178
+run_name: delicate-fox-763
+run_uuid: b10fbc4844814969b33a66d9e03c1178
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1728126073160
+status: 3
+tags: []
+user_id: ubuntu
