@@ -4,13 +4,11 @@ stages:
     deps:
       - src/pipeline/training_pipeline.py
       - src/components/data_ingestion.py
-
     outs:
       - artifacts/raw.csv
-      - artifacts/test.csv
       - artifacts/train.csv
+      - artifacts/test.csv
     
-
   data_transformation:
     cmd: python src/pipeline/training_pipeline.py data_transformation
     deps:
@@ -18,10 +16,10 @@ stages:
       - src/components/data_transformation.py
       - artifacts/train.csv
       - artifacts/test.csv
-
     outs:
       - artifacts/preprocessor.pkl
-
+      - artifacts/train_data.tfrecord
+      - artifacts/test_data.tfrecord
 
   model_training:
     cmd: python src/pipeline/training_pipeline.py model_training
@@ -29,7 +27,7 @@ stages:
       - src/pipeline/training_pipeline.py
       - src/components/model_trainer.py
       - artifacts/preprocessor.pkl
-      
-
+      - artifacts/train_data.tfrecord
+      - artifacts/test_data.tfrecord
     outs:
-      - artifacts/model.pkl
+      - artifacts/final_model
