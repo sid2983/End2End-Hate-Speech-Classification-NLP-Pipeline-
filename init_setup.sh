@@ -1,7 +1,6 @@
 
 
 
-
 echo [$(date)] : "Starting init_setup.sh"
 
 
@@ -37,7 +36,7 @@ echo [$(date)] : "Environment activated successfully"
 
 echo [$(date)] : "Installing required packages"
 
-pip install -r requirements.txt
+pip install -r requirements_dev.txt
 # change the requirements_dev.txt to the requirements.txt if you are using cuda 
 
 echo [$(date)] : "Packages installed"

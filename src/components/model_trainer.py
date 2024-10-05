@@ -38,6 +38,7 @@ class ModelTrainer:
         try:
             logging.info("Model Training Started")
 
+            # Set MLflow experiment
             mlflow.set_experiment("Hate Speech Classification NLP")
             with mlflow.start_run() as run:
                 mlflow.log_param("epochs", self.trainer_config.epochs)
@@ -88,6 +89,10 @@ class ModelTrainer:
                 eval_results = model.evaluate(test_data)
                 loss_value, accuracy_value = eval_results[0], eval_results[1]
                 logging.info(f"Evaluation results: {eval_results}")
+                # Evaluate the model on the test set
+                eval_results = model.evaluate(test_data)
+                loss_value, accuracy_value = eval_results[0], eval_results[1]
+                logging.info(f"Evaluation results: {eval_results}")
 
                 mlflow.log_metric("test_loss", loss_value)
                 mlflow.log_metric("test_accuracy", accuracy_value)
@@ -103,6 +108,7 @@ class ModelTrainer:
                 mlflow.log_artifacts(self.trainer_config.log_dir, artifact_path="tensorboard_logs")
 
                 logging.info("Model Training Completed")
+                logging.info("Model Training Completed")
 
                 model_uri = f"runs:/{run.info.run_id}/model"
                 mlflow.register_model(model_uri=model_uri, name=self.trainer_config.registered_model_name)
@@ -112,6 +118,9 @@ class ModelTrainer:
         except Exception as e:
             logging.error("Model Training Failed")
             raise CustomException(e, sys)
+        finally:
+            # Ensure to end MLflow run
+            mlflow.end_run()
 
 
 if __name__ == "__main__":
