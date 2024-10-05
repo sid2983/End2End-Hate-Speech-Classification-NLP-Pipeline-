@@ -173,6 +173,8 @@ artifacts/train_array.npy
 artifacts/test_array.npy
 artifacts/train_data.tfrecord
 artifacts/test_data.tfrecord
+artifacts/final_model
+best_model
 logs/
 logs/train/
 

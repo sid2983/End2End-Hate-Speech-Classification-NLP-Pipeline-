@@ -1,6 +1,9 @@
 import os
 import sys
+import re
+import emoji
 import pandas as pd
+import pickle
 import tensorflow as tf
 import numpy as np
 from transformers import RobertaTokenizer
@@ -15,7 +18,9 @@ class DataTransformationConfig:
     test_data_path: str = os.path.join("artifacts", "test.csv")
     transformed_train_data_path: str = os.path.join("artifacts", "train_data.tfrecord")
     transformed_test_data_path: str = os.path.join("artifacts", "test_data.tfrecord")
+    preprocessor_save_path: str = os.path.join("artifacts", "preprocessor.pkl")
     tokenizer_path: str = 'roberta-base'
+    max_seq_length: int = 128
 
 class DataTransformation:
     def __init__(self, config: DataTransformationConfig):
@@ -29,19 +34,50 @@ class DataTransformation:
             return train_data, test_data
         except Exception as e:
             raise CustomException(e, sys)
+        
+    def clean_text(self, text: str) -> str:
+
+
+        text = text.lower()
+
+        text = emoji.demojize(text)
+        text = re.sub(r'@\w+', '', text)
+        text = re.sub(r'https?://\S+|www\.\S+', '', text)
+        text = re.sub(r'<.*?>', '', text)
+        text = re.sub(r'[^\w\s,\.!?]', '', text)
+        text = re.sub(r'#', '', text)
+        text = re.sub(r'[^\x00-\x7F]+', '', text)  
+        text = re.sub(r'\s+', ' ', text).strip()
+
+        return text
 
     def clean_and_tokenize_data(self, texts, labels):
         # Tokenization process with truncation, padding, and max length
-        logging.info("Tokenizing data...")
+        logging.info(" Cleaning Tokenizing data...")
+
+        texts = [self.clean_text(text) for text in texts]
 
         if not all(isinstance(text, str) for text in texts):
             raise ValueError("Input contains non-string data")
-        encodings = self.tokenizer(texts, truncation=True, padding=True, max_length=128, return_tensors='tf')
+        encodings = self.tokenizer(texts, truncation=True, padding=True, max_length=self.transformation_config.max_seq_length, return_tensors='tf')
         return encodings['input_ids'], encodings['attention_mask'], np.array(labels)
 
     def create_tf_dataset(self, input_ids, attention_masks, labels):
         dataset = tf.data.Dataset.from_tensor_slices(({'input_ids': input_ids, 'attention_mask': attention_masks}, labels))
         return dataset
+    
+    def save_preprocessor(self):
+        """Saves the preprocessor, including the tokenizer and cleaning logic."""
+        try:
+            preprocessor = {
+                'tokenizer': self.tokenizer,
+                'clean_text': self.clean_text
+            }
+            with open(self.transformation_config.preprocessor_save_path, 'wb') as f:
+                pickle.dump(preprocessor, f)
+            logging.info(f"Preprocessor saved to {self.transformation_config.preprocessor_save_path}")
+        except Exception as e:
+            raise CustomException(e, sys)
 
     def initiate_data_transformation(self):
         logging.info("Data Transformation Started")
@@ -81,7 +117,7 @@ class DataTransformation:
             AUTOTUNE = tf.data.experimental.AUTOTUNE
             train_data = (train_dataset
                         .shuffle(buffer_size=1000)  # Shuffle the dataset
-                        .batch(32)  # Batch size for training
+                        .batch(64)  # Batch size for training
                         .prefetch(buffer_size=AUTOTUNE))  # Prefetch for efficient training
 
             test_data = (test_dataset
@@ -93,6 +129,8 @@ class DataTransformation:
             train_data.save(self.transformation_config.transformed_train_data_path)
             test_data.save(self.transformation_config.transformed_test_data_path)
             logging.info("Data Transformation Completed and saved to artifacts.")
+
+            self.save_preprocessor()
 
             return (
                 self.transformation_config.transformed_train_data_path,
