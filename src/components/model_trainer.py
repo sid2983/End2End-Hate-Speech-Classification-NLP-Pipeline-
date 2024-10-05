@@ -16,6 +16,7 @@ class ModelTrainerConfig:
     checkpoint_path: str = './best_model'
     num_labels: int = 2
     epochs: int = 3
+    
 
 class ModelTrainer:
     def __init__(self, config: ModelTrainerConfig):
