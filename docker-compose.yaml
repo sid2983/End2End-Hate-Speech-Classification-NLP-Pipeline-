@@ -1,25 +1,24 @@
-version: "3"
+version: '3.8'
+
 services:
   airflow:
-    build: 
+    image: airflow:local
+    build:
       context: ./
       dockerfile: Dockerfile.airflow
-
-    image: airflowimage
-    container_name: gemstone_prediction
+      args:
+        AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+        AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+        AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+    container_name: airflow
+    env_file:                       
+      - .env
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all  # Make all GPUs availabl
+      - AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=1000
+      - AIRFLOW__CORE__ENABLE_XCOM_PICKLING=True
     ports:
-      - "8080:8080"  # Airflow UI
-      - "5050:5050"  # MLflow UI
+      - "8080:8080"
 
 
-   
-  flaskapp:
-    build: 
-      context: ./
-      dockerfile: Dockerfile.flask
-
-    image: flaskappimage
-    container_name: gemstone_prediction_app
-    ports:
-      - "5000:5000"  # Flask app
 

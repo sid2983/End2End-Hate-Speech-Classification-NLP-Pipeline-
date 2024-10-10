@@ -1,19 +1,26 @@
+
+
+
+
+# Use Python base image
 FROM python:3.12.5-slim-bullseye
 
+# Set the user and create app directory
 USER root
 RUN mkdir /app
 COPY . /app
 WORKDIR /app/
 
-# Install dependencies
-RUN pip install -r requirements.txt
+# Install dependencies from requirements
+RUN pip install -r requirements_dev.txt
 
-# Airflow environment variables
+# Set environment variables for Airflow
 ENV AIRFLOW_HOME="/app/airflow"
 ENV AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=1000
 ENV AIRFLOW__CORE__ENABLE_XCOM_PICKLING=True
 
 # Initialize Airflow and create an admin user
+RUN pip install apache-airflow  # Install Airflow if not already in requirements_dev.txt
 RUN airflow db init
 RUN airflow users create --username admin --password admin --firstname admin --lastname admin --role Admin --email sid24000576@gmail
 
@@ -24,7 +31,7 @@ RUN chmod 777 start.sh
 RUN apt update -y 
 RUN if [ ! -e /usr/local/bin/python ]; then ln -s /usr/local/bin/python3 /usr/local/bin/python; fi
 
-# Create logs directory
+# Create logs directory with necessary permissions
 RUN mkdir -p /app/logs && chmod -R 777 /app/logs
 
 # Install AWS CLI for DVC interaction with S3
@@ -34,15 +41,25 @@ RUN apt-get update && apt-get install -y curl unzip && \
     ./aws/install && \
     rm awscliv2.zip
 
-# Set up DVC remote without storing credentials
+# Add build arguments for AWS credentials
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+ARG AWS_DEFAULT_REGION
+
+# Configure DVC remote
+RUN apt-get install -y git  # Ensure git is installed for DVC to function
 RUN if ! dvc remote list | grep -q 'datastore'; then \
-    dvc remote add -d datastore s3://ksp-dvc2; \
+    cd /app && \
+    dvc remote add -d datastore s3://ksp-dvc3 && \
+    dvc remote modify datastore access_key_id ${AWS_ACCESS_KEY_ID} && \
+    dvc remote modify datastore secret_access_key ${AWS_SECRET_ACCESS_KEY} && \
+    dvc remote modify datastore region ${AWS_DEFAULT_REGION}; \
     fi
 
-
+# Expose required ports for Airflow
 EXPOSE 8080
 EXPOSE 5050
 
-# ENTRYPOINT and CMD for the container
+# Entry point and command to start the container
 ENTRYPOINT [ "/bin/sh" ]
 CMD [ "start.sh" ]

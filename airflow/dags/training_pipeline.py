@@ -15,7 +15,7 @@ with DAG(
     },
     description="DAG for training NLP model",
     schedule=timedelta(minutes=60),
-    start_date=pendulum.datetime(2024, 9, 16, tz=ZoneInfo('Asia/Kolkata')),
+    start_date=pendulum.datetime(2024, 10, 10, tz=ZoneInfo('Asia/Kolkata')),
     concurrency=1,
     catchup=False,
     tags=["machine_learning", "NLP", "Hate_Speech"],
@@ -26,7 +26,7 @@ with DAG(
     # Task for Data Ingestion
     data_ingestion_task = BashOperator(
         task_id="data_ingestion",
-        bash_command="dvc repro -s data_ingestion --force >> logs/data_ingestion.log 2>&1",
+        bash_command="cd /app && dvc repro -s data_ingestion --force >> logs/data_ingestion.log 2>&1",
     )
 
     data_ingestion_task.doc_md = dedent(
@@ -39,7 +39,7 @@ with DAG(
     # Task for Data Transformation
     data_transformation_task = BashOperator(
         task_id="data_transformation",
-        bash_command="dvc repro -s data_transformation --force >> logs/data_transformation.log 2>&1",
+        bash_command=" cd /app && dvc repro -s data_transformation --force >> logs/data_transformation.log 2>&1",
     )
 
     data_transformation_task.doc_md = dedent(
@@ -52,13 +52,13 @@ with DAG(
     # Task for Model Training
     model_trainer_task = BashOperator(
         task_id="model_trainer",
-        bash_command="dvc repro -s model_training --force >> logs/model_training.log 2>&1",
+        bash_command=" cd /app && dvc repro -s model_training --force >> logs/model_training.log 2>&1",
     )
 
     model_trainer_task.doc_md = dedent(
         """
         #### Model Training Task
-        This task is responsible for training the NLP model.
+        This task is responsible for SFT of  the BERT model.
         """
     )
 

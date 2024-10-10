@@ -1,26 +1,19 @@
-#!bin/sh
-nohup airflow scheduler &
-airflow webserver &
+#!/bin/sh
+rm -f /app/airflow/airflow-webserver.pid && echo "Removed airflow-webserver.pid file"
 
+python3 -c "import tensorflow as tf; print('Num GPUs Available:', len(tf.config.list_physical_devices('GPU')))"
+
+
+cd /app
+
+#check if gpu is available
+
+# Push DVC artifacts to S3
 echo "Pushing DVC artifacts to S3..."
-cd /app && dvc push && echo "DVC artifacts pushed to S3 successfully"
+dvc push && echo "DVC artifacts pushed to S3 successfully"
 
 
-
-echo "Waiting for MLflow initialization..."
-
-while [ ! -d "/app/mlruns" ]; do
-    echo "MLflow directory not found. Checking again in 10 seconds..."
-    sleep 10
-done
-
-echo "MLflow initialized"
-
-echo "Starting MLflow UI..."
-
-mlflow ui --host 0.0.0.0 --port 5050
-
-echo "MLflow UI started"
-
-
+# Start Airflow services in the background
+nohup airflow scheduler &
+airflow webserver 
 
