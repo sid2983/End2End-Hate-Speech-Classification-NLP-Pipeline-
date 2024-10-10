@@ -1,6 +1,8 @@
 #!/bin/sh
 rm -f /app/airflow/airflow-webserver.pid && echo "Removed airflow-webserver.pid file"
 
+nvidia-smi
+
 if command -v nvidia-smi &> /dev/null; then
     echo "GPU detected: $(nvidia-smi)"
 else

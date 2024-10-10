@@ -41,6 +41,7 @@ services:
       - NVIDIA_VISIBLE_DEVICES=all  # Make all GPUs availabl
       - AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=1000
       - AIRFLOW__CORE__ENABLE_XCOM_PICKLING=True
+    
 
     deploy:
       resources:
