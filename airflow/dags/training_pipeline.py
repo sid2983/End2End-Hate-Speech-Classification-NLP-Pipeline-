@@ -62,11 +62,11 @@ with DAG(
         """
     )
 
-    # # Task for Pushing Artifacts to S3
-    # push_to_s3_task = BashOperator(
-    #     task_id="push_to_s3",
-    #     bash_command="cd /app && dvc push >> /app/logs/dvc_push.log 2>&1",
-    # )
+    # Task for Pushing Artifacts to S3
+    push_to_s3_task = BashOperator(
+        task_id="push_to_s3",
+        bash_command="cd /app && dvc push >> /app/logs/dvc_push.log 2>&1",
+    )
 
     # Define the execution flow
-    data_ingestion_task >> data_transformation_task >> model_trainer_task
+    data_ingestion_task >> data_transformation_task >> model_trainer_task >> push_to_s3_task
