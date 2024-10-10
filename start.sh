@@ -1,6 +1,12 @@
 #!/bin/sh
 rm -f /app/airflow/airflow-webserver.pid && echo "Removed airflow-webserver.pid file"
 
+if command -v nvidia-smi &> /dev/null; then
+    echo "GPU detected: $(nvidia-smi)"
+else
+    echo "No GPU detected"
+fi
+
 python3 -c "import tensorflow as tf; print('Num GPUs Available:', len(tf.config.list_physical_devices('GPU')))"
 
 
