@@ -175,6 +175,7 @@ artifacts/train_data.tfrecord
 artifacts/test_data.tfrecord
 artifacts/final_model
 best_model
+best_model/*
 logs/
 logs/train/
 
